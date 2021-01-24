@@ -159,11 +159,6 @@ func setUpHTTPTunnel(ctx context.Context, dest net.Destination, target string, u
 			return nil, err
 		}
 
-		if _, err := rawConn.Write(firstPayload); err != nil {
-			rawConn.Close()
-			return nil, err
-		}
-
 		resp, err := http.ReadResponse(bufio.NewReader(rawConn), req)
 		if err != nil {
 			rawConn.Close()
@@ -174,6 +169,12 @@ func setUpHTTPTunnel(ctx context.Context, dest net.Destination, target string, u
 			rawConn.Close()
 			return nil, newError("Proxy responded with non 200 code: " + resp.Status)
 		}
+
+		if _, err := rawConn.Write(firstPayload); err != nil {
+			rawConn.Close()
+			return nil, err
+		}
+
 		return rawConn, nil
 	}
 
